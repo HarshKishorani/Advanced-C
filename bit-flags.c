@@ -59,8 +59,8 @@ int main(void)
     // printf("%d\n", f(1234, FLAG_B | FLAG_C)); // FLAG_B and FLAG_C are true.
 
     // Using second way
-    printf("%d\n", f(1234, (t_flag)0));       // All flags are false
-    printf("%d\n", f(1234, FLAG_A));          // Only FLAG_A is true
+    printf("%d\n", f(1234, (t_flag)0));                 // All flags are false
+    printf("%d\n", f(1234, FLAG_A));                    // Only FLAG_A is true
     printf("%d\n", f(1234, (t_flag)(FLAG_B | FLAG_C))); // FLAG_B and FLAG_C are true.
     return 0;
 }
