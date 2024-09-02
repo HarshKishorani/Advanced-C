@@ -1,12 +1,33 @@
 #!/bin/bash
 
-# Check if a file was provided as an argument
-if [ $# -eq 0 ]; then
-    echo "Usage: $0 <source_file.c/cpp>"
+# Function to display usage
+usage() {
+    echo "Usage: $0 [-s standard] source_file"
+    echo "  -s standard : Set the C/C++ standard to use (e.g., c99, c11, c++11, c++14)"
+    echo "  source_file : The C or C++ source file to compile and run"
     exit 1
+}
+
+# Parse options
+while getopts "s:" opt; do
+    case $opt in
+        s)
+            STANDARD=$OPTARG
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
+# Shift positional arguments so that $1 is the source file
+shift $((OPTIND-1))
+
+# Check if a source file was provided
+if [ -z "$1" ]; then
+    usage
 fi
 
-# Get the file name from the argument
 SOURCE_FILE=$1
 
 # Check if the file exists
@@ -15,8 +36,29 @@ if [ ! -f "$SOURCE_FILE" ]; then
     exit 1
 fi
 
-# Compile the file
-g++ "$SOURCE_FILE" -o temp_executable
+# Determine the compiler based on the file extension
+if [[ $SOURCE_FILE == *.c ]]; then
+    COMPILER="gcc"
+    if [ -n "$STANDARD" ]; then
+        echo "Compiler : gcc -std=$STANDARD $SOURCE_FILE"
+        $COMPILER -std=$STANDARD $SOURCE_FILE -o temp_executable
+    else
+        echo "Compiler : gcc $SOURCE_FILE"
+        $COMPILER $SOURCE_FILE -o temp_executable
+    fi
+elif [[ $SOURCE_FILE == *.cpp ]]; then
+    COMPILER="g++"
+    if [ -n "$STANDARD" ]; then
+        echo "Compiler : g++ -std=$STANDARD $SOURCE_FILE"
+        $COMPILER -std=$STANDARD $SOURCE_FILE -o temp_executable
+    else
+        echo "Compiler : g++ $SOURCE_FILE"
+        $COMPILER $SOURCE_FILE -o temp_executable
+    fi
+else
+    echo "Unsupported file extension. Use .c for C files or .cpp for C++ files."
+    exit 1
+fi
 
 # Check if compilation was successful
 if [ $? -ne 0 ]; then
@@ -30,4 +72,5 @@ fi
 # Remove the executable
 rm -f ./temp_executable
 
-echo "\nExecution complete."
+echo ""
+echo "Execution complete."
