@@ -12,6 +12,4 @@ int main(void)
     printf("b in int : %d\n", b);
     printf("b in octadecimal : %o\n", b);
     printf("b in binary : %o\n", b);
-
-
 }
